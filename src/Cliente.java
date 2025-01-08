@@ -2,11 +2,11 @@ import com.mysql.cj.x.protobuf.MysqlxPrepare;
 import db.DB;
 
 import java.io.Serializable;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
+import java.sql.*;
 import java.text.ParseException;
+import java.util.ArrayList;
 import java.util.Objects;
+import java.util.Scanner;
 
 public class Cliente implements Serializable {
     private int id;
@@ -15,6 +15,9 @@ public class Cliente implements Serializable {
     private int cpf;
     private String email;
     private String senha;
+
+    ArrayList<Cliente> clientes = new ArrayList<>();
+    Scanner sc = new Scanner(System.in);
 
     public int getId() {
         return id;
@@ -103,7 +106,24 @@ public class Cliente implements Serializable {
 
 
 
-    public void salvar(Cliente cliente){
+    public void salvar(){
+
+        System.out.println("Nome: ");
+        String nome = sc.nextLine();
+
+        System.out.println("Idade: ");
+        int idade = sc.nextInt();
+
+        System.out.println("CPF: ");
+        int cpf = sc.nextInt();
+
+        System.out.println("E-mail: ");
+        sc.nextLine();
+        String email = sc.nextLine();
+
+        System.out.println("Senha (4 Dígitos):");
+        String senha = sc.nextLine();
+
 
         Connection conn = null;
         PreparedStatement st = null;
@@ -118,13 +138,48 @@ public class Cliente implements Serializable {
                             "VALUES" +
                             "(?,?,?,?,?)"
             );
-            st.setString(1, cliente.nome);
-            st.setInt(2,cliente.idade);
-            st.setInt(3,cliente.cpf);
-            st.setString(4,cliente.email);
-            st.setString(5,cliente.senha);
+            st.setString(1, nome);
+            st.setInt(2,idade);
+            st.setInt(3,cpf);
+            st.setString(4,email);
+            st.setString(5,senha);
 
             st.executeUpdate();
+
+        }catch (SQLException e) {
+            e.printStackTrace();
+            System.out.println(e);
+        }finally {
+            DB.closeStatement(st);
+            DB.closeConnection();
+        }
+    }
+
+    public void Listar(){
+
+        Connection conn = null;
+        Statement st = null;
+        ResultSet rs = null;
+
+        try{
+            conn = DB.getConnection();
+
+
+            st = conn.createStatement();
+
+            rs = st.executeQuery("SELECT * FROM clientes ");
+
+            while (rs.next()){
+                System.out.println(
+                        "id: " + rs.getInt(1) +
+                                "\nNome: " + rs.getString(2) +
+                                "\nIdade:" + rs.getInt(3) +
+                                "\nCPF" + rs.getInt(4) +
+                                "\nE-mail: " + rs.getString(5) +
+                                "----------------------"
+
+                );
+            }
 
         }catch (SQLException e) {
             e.printStackTrace();

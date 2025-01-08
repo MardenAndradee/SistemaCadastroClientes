@@ -4,29 +4,44 @@ import java.util.Scanner;
 public class Main {
     public static void main(String[] args) {
 
-        Scanner sc = new Scanner(System.in);
+        Cliente cliente = new Cliente();
+        boolean menus = true;
+        Scanner scanner = new Scanner(System.in);
 
-        ArrayList<Cliente> clientes = new ArrayList<>();
+        while(menus == true){
+            System.out.println("""
+                      Clientes
+                      
+                      1- Cadastrar 
+                      2- Listar 
+                      3- Editar 
+                      4- Excluir
+                      
+                       """);
+            int menu = scanner.nextInt();
 
-        System.out.println("Nome: ");
-        String nome = sc.nextLine();
+            if(menu == 1){
+                try{
+                    cliente.salvar();
+                    System.out.println("Salvo com sucesso!");
+                } catch (Exception e) {
+                    throw new RuntimeException(e);
+                }
 
-        System.out.println("Idade: ");
-        int idade = sc.nextInt();
+            }if(menu == 2){
+                cliente.Listar();
+            }
+            if(menu == 3){
 
-        System.out.println("CPF: ");
-        int cpf = sc.nextInt();
+            }
+            if(menu == 4){
 
-        System.out.println("E-mail: ");
-        sc.nextLine();
-        String email = sc.nextLine();
+            }
 
-        System.out.println("Senha (4 Dígitos):");
-        String senha = sc.nextLine();
+        }
 
-        Cliente cliente = new Cliente(0,nome,idade,cpf,email,senha);
 
-        cliente.salvar(cliente);
+
 
     }
 }
