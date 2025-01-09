@@ -33,6 +33,8 @@ public class DB {
 				conn.close();
 			} catch (SQLException e) {
 				throw new DbException(e.getMessage());
+			}finally {
+				conn = null;
 			}
 		}
 	}

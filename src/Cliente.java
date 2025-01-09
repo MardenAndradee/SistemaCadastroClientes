@@ -1,12 +1,8 @@
-import com.mysql.cj.x.protobuf.MysqlxPrepare;
 import db.DB;
 
 import java.io.Serializable;
 import java.sql.*;
-import java.text.ParseException;
-import java.util.ArrayList;
 import java.util.Objects;
-import java.util.Scanner;
 
 public class Cliente implements Serializable {
     private int id;
@@ -15,9 +11,6 @@ public class Cliente implements Serializable {
     private int cpf;
     private String email;
     private String senha;
-
-    ArrayList<Cliente> clientes = new ArrayList<>();
-    Scanner sc = new Scanner(System.in);
 
     public int getId() {
         return id;
@@ -104,33 +97,17 @@ public class Cliente implements Serializable {
                 '}';
     }
 
+//CRUD
 
 
-    public void salvar(){
-
-        System.out.println("Nome: ");
-        String nome = sc.nextLine();
-
-        System.out.println("Idade: ");
-        int idade = sc.nextInt();
-
-        System.out.println("CPF: ");
-        int cpf = sc.nextInt();
-
-        System.out.println("E-mail: ");
-        sc.nextLine();
-        String email = sc.nextLine();
-
-        System.out.println("Senha (4 Dígitos):");
-        String senha = sc.nextLine();
-
+    public void salvar(Cliente c){
 
         Connection conn = null;
         PreparedStatement st = null;
 
         try{
-            conn = DB.getConnection();
 
+            conn = DB.getConnection();
 
             st = conn.prepareStatement(
                     "INSERT INTO clientes " +
@@ -138,11 +115,11 @@ public class Cliente implements Serializable {
                             "VALUES" +
                             "(?,?,?,?,?)"
             );
-            st.setString(1, nome);
-            st.setInt(2,idade);
-            st.setInt(3,cpf);
-            st.setString(4,email);
-            st.setString(5,senha);
+            st.setString(1, c.nome);
+            st.setInt(2,c.idade);
+            st.setInt(3,c.cpf);
+            st.setString(4,c.email);
+            st.setString(5,c.senha);
 
             st.executeUpdate();
 
@@ -155,7 +132,7 @@ public class Cliente implements Serializable {
         }
     }
 
-    public void Listar(){
+    public void listar(){
 
         Connection conn = null;
         Statement st = null;
@@ -174,12 +151,75 @@ public class Cliente implements Serializable {
                         "id: " + rs.getInt(1) +
                                 "\nNome: " + rs.getString(2) +
                                 "\nIdade:" + rs.getInt(3) +
-                                "\nCPF" + rs.getInt(4) +
+                                "\nCPF: " + rs.getInt(4) +
                                 "\nE-mail: " + rs.getString(5) +
-                                "----------------------"
+                                "\n----------------------"
 
                 );
             }
+
+        }catch (SQLException e) {
+            e.printStackTrace();
+            System.out.println(e);
+        }finally {
+            DB.closeStatement(st);
+            DB.closeResultSet(rs);
+            DB.closeConnection();
+        }
+    }
+
+    public void editar(Cliente c){
+
+        Connection conn = null;
+        PreparedStatement st = null;
+
+        try{
+            conn = DB.getConnection();
+
+            st = conn.prepareStatement(
+                    "UPDATE clientes " +
+                            "SET nome= ?, " +
+                            "idade = ?, " +
+                            "cpf = ?, " +
+                            "email = ?, " +
+                            "senha = ? " +
+                            "WHERE id = ?"
+            );
+            st.setString(1, c.nome);
+            st.setInt(2,c.idade);
+            st.setInt(3,c.cpf);
+            st.setString(4,c.email);
+            st.setString(5,c.senha);
+            st.setInt(6,c.id);
+
+            st.executeUpdate();
+
+        }catch (SQLException e) {
+            e.printStackTrace();
+            System.out.println(e);
+        }finally {
+            DB.closeStatement(st);
+            DB.closeConnection();
+        }
+    }
+
+    public void excluir(int id){
+
+        Connection conn = null;
+        PreparedStatement st = null;
+
+        try{
+            conn = DB.getConnection();
+
+
+
+            st = conn.prepareStatement(
+                    "DELETE FROM clientes WHERE id = ?"
+            );
+            st.setInt(1, id);
+
+
+            st.executeUpdate();
 
         }catch (SQLException e) {
             e.printStackTrace();
